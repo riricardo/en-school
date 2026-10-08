@@ -20,6 +20,7 @@ const defaults = () => ({
     amount: 100,
     repeatGap: 20,
     autoAudio: false,
+    playbackRate: 1,
   },
   stats: {},
   round: null,
@@ -33,6 +34,7 @@ let state = defaults();
 let storageHealthy = true;
 let data = [];
 let lastSignature = "";
+let playWait = null;
 const audio = new PiperAudio();
 
 function normalizeSettings(settings = {}) {
@@ -58,6 +60,12 @@ function normalizeSettings(settings = {}) {
     ),
     repeatGap: clamp(settings.repeatGap, 1, 2000, 20),
     autoAudio: settings.autoAudio === true,
+    playbackRate: [0.5, 0.75, 1, 1.25, 1.5, 2].reduce((closest, rate) =>
+      Math.abs(rate - Number(settings.playbackRate)) <
+      Math.abs(closest - Number(settings.playbackRate))
+        ? rate
+        : closest,
+    1),
   };
 }
 function validTask(task) {
@@ -202,12 +210,37 @@ function canPlay() {
   if (!c) return false;
   return c.task.skill !== "reverse" || state.round.phase === "solution";
 }
+function clearPlayWait() {
+  if (!playWait) return;
+  clearTimeout(playWait.timer);
+  playWait = null;
+}
 function play() {
   const c = currentPair();
   if (!c || !canPlay() || $("settings").open) return;
   const signature =
     state.round.done + ":" + E.key(c.task) + ":" + state.round.phase;
+  audio.setPlaybackRate(state.settings.playbackRate);
+  clearPlayWait();
+  const wait = { signature, visible: false, timer: null };
+  playWait = wait;
+  if (!audio.has(c.pair.english)) {
+    wait.timer = setTimeout(() => {
+      const current = currentPair();
+      const currentSignature =
+        current &&
+        state.round.done + ":" + E.key(current.task) + ":" + state.round.phase;
+      if (
+        playWait !== wait ||
+        signature !== currentSignature
+      )
+        return;
+      wait.visible = true;
+      updateAudioStatus();
+    }, 400);
+  }
   audio.speak(c.pair.english, () => {
+    if (playWait === wait) clearPlayWait();
     if (
       !state.round?.queue[0] ||
       signature !==
@@ -250,9 +283,11 @@ function render() {
     ? `${r.queue.length} desafios restantes`
     : "";
   if (!c) {
+    clearPlayWait();
     audio.stop();
     lastSignature = "";
     $("prompt").textContent = "";
+    updateAudioWindow();
     updateAudioStatus();
     return;
   }
@@ -265,6 +300,7 @@ function render() {
   updateAnswers();
   const signature = r.done + ":" + E.key(task) + ":" + r.phase;
   if (signature !== lastSignature) {
+    clearPlayWait();
     lastSignature = signature;
     audio.stop();
     if (
@@ -275,7 +311,27 @@ function render() {
     )
       play();
   }
+  updateAudioWindow();
   updateAudioStatus();
+}
+function updateAudioWindow() {
+  if (
+    $("settings").open ||
+    (!state.settings.autoAudio &&
+      !state.settings.directions.includes("listening"))
+  ) {
+    audio.setWindow([]);
+    return;
+  }
+  const texts = (state.round?.queue || [])
+    .slice(0, 10)
+    .map((task) => {
+      const card = byId.get(task.id);
+      return card && (task.form === "base" || card.forms?.[task.form])
+        ? E.content(card, task.form).english
+        : "";
+    });
+  audio.setWindow(texts);
 }
 function start() {
   if (!storageHealthy) return;
@@ -330,9 +386,10 @@ function updateSelection() {
   state.settings.directions = readChecks($("directionChecks"));
   save();
   settingsValues();
-  if (state.settings.directions.includes("listening")) prepareAudio();
 }
 function openSettings() {
+  clearPlayWait();
+  audio.setWindow([]);
   audio.stop();
   lastSignature = "";
   checkboxes(
@@ -354,6 +411,7 @@ function openSettings() {
   $("situation").value = state.settings.situation;
   $("repeatGap").value = state.settings.repeatGap;
   $("autoAudio").checked = state.settings.autoAudio;
+  $("audioSpeed").value = String(state.settings.playbackRate);
   settingsValues();
   $("lesson").hidden = true;
   document.body.classList.add("config-open");
@@ -374,24 +432,42 @@ async function prepareAudio() {
   audio.unlock();
   try {
     await audio.prepare();
-  } catch {}
+  } catch {
+    updateAudioStatus();
+  }
 }
 function updateAudioStatus() {
   const { state: status, percent } = audio.status;
+  if (
+    playWait &&
+    ["playing", "tap", "error"].includes(status)
+  )
+    clearPlayWait();
   let message = "";
-  if (status === "preparing")
+  const showPreparation =
+    audio.explicitPreparing || (playWait?.visible && status === "preparing");
+  if (status === "preparing" && showPreparation)
     message = "Preparando áudio…" + (percent === null ? "" : ` ${percent}%`);
-  else if (status === "generating") message = "Preparando áudio…";
+  else if (status === "generating" && playWait?.visible)
+    message = "Gerando áudio…";
   else if (status === "error") message = "Não foi possível preparar o áudio.";
   else if (status === "tap") message = "Toque para ouvir.";
   $("audioText").textContent = message;
-  $("audioMessage").hidden = !message || !canPlay();
+  $("audioMessage").hidden =
+    !message ||
+    !canPlay() ||
+    (status === "preparing" && !showPreparation);
   $("retryAudio").hidden = status !== "error";
-  $("settingsAudio").textContent = message;
-  $("settingsAudio").hidden = !message;
+  const settingsMessage =
+    status === "preparing" && audio.explicitPreparing
+      ? "Preparando áudio…" + (percent === null ? "" : ` ${percent}%`)
+      : status === "error"
+        ? message
+        : "";
+  $("settingsAudio").textContent = settingsMessage;
+  $("settingsAudio").hidden = !settingsMessage;
   $("settingsRetry").hidden = status !== "error";
   $("playAudio").classList.toggle("playing", status === "playing");
-  $("playAudio").disabled = status === "preparing" || status === "generating";
   updateAnswers();
 }
 audio.addEventListener("status", updateAudioStatus);
@@ -425,7 +501,11 @@ $("settingsRetry").onclick = prepareAudio;
 $("autoAudio").onchange = () => {
   state.settings.autoAudio = $("autoAudio").checked;
   save();
-  if (state.settings.autoAudio) prepareAudio();
+};
+$("audioSpeed").onchange = () => {
+  state.settings.playbackRate = Number($("audioSpeed").value);
+  audio.setPlaybackRate(state.settings.playbackRate);
+  save();
 };
 $("situation").onchange = () => {
   state.settings.situation = $("situation").value;

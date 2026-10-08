@@ -4,6 +4,8 @@
   --muted: #85858b;
   --line: #e9e9ed;
   --accent: #28834c;
+  --positive: #e0f0e6;
+  --switch-on: #a7d0b4;
 }
 * {
   box-sizing: border-box;
@@ -161,7 +163,7 @@ svg {
   display: grid;
   place-items: center;
   border-radius: 16px;
-  background: #e0f0e6;
+  background: var(--positive);
   color: var(--accent);
   margin: 10px 0;
 }
@@ -206,7 +208,7 @@ svg {
   color: #d34444;
 }
 #yes {
-  background: #e0f0e6;
+  background: var(--positive);
   color: var(--accent);
 }
 .primary,
@@ -219,7 +221,7 @@ svg {
   font-weight: 600;
 }
 .primary {
-  background: #e0f0e6;
+  background: var(--positive);
   color: var(--accent);
 }
 .danger {
@@ -332,10 +334,12 @@ input[type="checkbox"]::before {
   background: white;
 }
 input[type="checkbox"]:checked {
-  background: var(--accent);
+  background: var(--switch-on);
 }
 input[type="checkbox"]:checked::before {
   left: 19px;
+  background: #fff;
+  box-shadow: 0 1px 2px #20212435;
 }
 .quantity {
   display: flex;

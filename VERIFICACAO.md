@@ -17,8 +17,11 @@ Interface com o banco existente de 30 itens: estudo por texto, retomada após re
 Listening em duas etapas e persistência foram testados com uma thread de áudio simulada, para exercitar os estados sem depender da rede ou inferência.
 Foram verificadas larguras de 320, 390, 768 e 1280 px sem overflow horizontal na tela de estudo. Captura inspecionada visualmente.
 
+O teste de áudio simulado também verifica a janela dos próximos exercícios, prioridade da reprodução solicitada sobre itens ainda na fila, atualização após inserir uma revisão, reaproveitamento sem geração duplicada, indicador após 400 ms, preferência persistida de velocidade aplicada à reprodução e ausência de mudanças de progresso pela pré-geração. A velocidade pode ser selecionada entre 0,5× e 2×. Ele não executa inferência Piper.
+
 ## Piper real
 
+As verificações abaixo foram feitas anteriormente e não foram repetidas para as mudanças de pré-geração/cache desta versão.
 A voz oficial Alan medium foi baixada pelo ambiente de linha de comando e servida localmente ao navegador de teste: os bytes do modelo e da configuração eram os oficiais, sem simular o Piper, ONNX, fonemizador ou reprodução.
 O Piper gerou e reproduziu inglês no navegador. Depois de a página ser recarregada com rede offline e sem a rota local do modelo, uma nova geração/reprodução passou, usando voz e motor guardados.
 O navegador deste ambiente não conseguiu acessar diretamente o Hugging Face (`ERR_EMPTY_RESPONSE`); portanto o download externo direto por navegador não foi validado aqui. O aplicativo mantém o endereço público oficial para o usuário e trata a falha com Tentar novamente.
