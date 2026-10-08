@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f5f5f7" />
+    <title>English Quest</title>
+    <link rel="manifest" href="/english-quest/manifest.json" />
+    <link rel="icon" href="/english-quest/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/english-quest/icon-192.png" />
+    <script type="module" crossorigin src="/english-quest/assets/index-BzWhgnyj.js"></script>
+    <link rel="stylesheet" crossorigin href="/english-quest/assets/index-BpdWlx5Q.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>English Quest</h1>
+        <button
+          id="settingsButton"
+          class="icon-button"
+          aria-label="Configurações"
+          aria-controls="settings"
+          aria-expanded="false"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="m9 3-.5 2-2 1-2-.5-2 3 1.5 1.5v3L2.5 15l2 3 2-.5 2 1L9 21h6l.5-2.5 2-1 2 .5 2-3-1.5-2v-3L21.5 9l-2-3-2 .5-2-1L15 3Z"
+            />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </button>
+      </header>
+      <div class="skill-scores" id="scores"></div>
+      <section id="lesson" aria-label="Estudo">
+        <p id="roundSummary" class="round-summary"></p>
+        <div id="card">
+          <h2 id="prompt"></h2>
+          <button
+            id="playAudio"
+            class="audio-button"
+            aria-label="Reproduzir inglês"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M11 4 6 8H3v8h3l5 4Z M15 8a6 6 0 0 1 0 8 M18 5a10 10 0 0 1 0 14"
+              />
+            </svg>
+          </button>
+          <p id="solution" hidden></p>
+          <div id="audioMessage" role="status" hidden>
+            <span id="audioText"></span
+            ><button id="retryAudio" class="text-button" hidden>
+              Tentar novamente
+            </button>
+          </div>
+          <p id="empty" hidden>Sem conteúdo nesta seleção.</p>
+        </div>
+        <footer>
+          <div id="answers">
+            <button id="no" aria-label="Não sei">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m7 7 10 10M17 7 7 17" />
+              </svg>
+            </button>
+            <button id="yes" aria-label="Sei">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m5 12 4 4L19 6" />
+              </svg>
+            </button>
+          </div>
+          <button id="next" class="primary" hidden>Próxima</button>
+          <div id="completed" hidden>
+            <p>Rodada concluída.</p>
+            <button id="newRound" class="primary">Nova rodada</button>
+          </div>
+        </footer>
+      </section>
+      <p id="storageWarning" class="hint" role="alert" hidden>
+        Não foi possível salvar o progresso.
+      </p>
+      <dialog id="settings" aria-labelledby="settingsTitle">
+        <div class="dialog-top">
+          <h2 id="settingsTitle">Ajustes</h2>
+          <button
+            id="closeSettings"
+            class="icon-button"
+            aria-label="Fechar configurações"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m7 7 10 10M17 7 7 17" />
+            </svg>
+          </button>
+        </div>
+        <fieldset>
+          <legend>Habilidades</legend>
+          <div id="directionChecks"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Conteúdo</legend>
+          <label class="field">Situação<select id="situation"></select></label>
+          <div id="categoryChecks"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Rodada</legend>
+          <div class="quantity">
+            <span>Desafios</span>
+            <div>
+              <button id="less" aria-label="Diminuir 100 desafios">−</button
+              ><output id="amount"></output
+              ><button id="more" aria-label="Aumentar 100 desafios">+</button>
+            </div>
+          </div>
+          <label class="field"
+            >Repetir erro após<input
+              id="repeatGap"
+              type="number"
+              min="1"
+              max="2000"
+              inputmode="numeric"
+          /></label>
+        </fieldset>
+        <fieldset>
+          <legend>Áudio</legend>
+          <label class="toggle"
+            >Ler inglês automaticamente<input id="autoAudio" type="checkbox"
+          /></label>
+          <div id="settingsAudio" class="hint" role="status" hidden></div>
+          <button id="settingsRetry" class="text-button" hidden>
+            Tentar novamente
+          </button>
+        </fieldset>
+        <button id="restart" class="primary">Nova rodada</button>
+        <button id="resetProgress" class="danger">Zerar progresso</button>
+      </dialog>
+    </main>
+  </body>
+</html>
