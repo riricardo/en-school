@@ -2,7 +2,7 @@
 
 ## Feito em Node.js
 
-Build com Vite 7.1.12 para uma subpasta (`/english/`) e sete testes de lógica/cache:
+Build com Vite 7.3.7 para `/en-school/` e sete testes de lógica/cache:
 - Sequências independentes por item/forma/habilidade, limite de 10 e reset individual.
 - Listening exige reprodução concluída e credita também EN→PT quando correto.
 - Erro no áudio não altera EN→PT antes da etapa de leitura.
@@ -33,6 +33,6 @@ O tempo de geração e a liberação de autoplay precisam ser conferidos no apar
 `npm ci`, `npm test`, `npm run build`.
 O teste do navegador usa Playwright/Chromium; para instalar o navegador, `npx playwright install chromium --only-shell`.
 
-`npm run test:browser` compila para `/english/` e executa o fluxo de interface com áudio simulado.
+`npm run test:browser` compila para `/en-school/` e executa o fluxo de interface com áudio simulado.
 Para incluir inferência real, defina `TEST_PIPER=1`. Por padrão, usará o download público; para repetir o teste com os bytes oficiais locais, informe também `TEST_MODEL_PATH` e `TEST_CONFIG_PATH`.
 `TEST_CHROMIUM_PATH` permite apontar um Chromium já instalado.

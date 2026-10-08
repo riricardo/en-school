@@ -9,7 +9,6 @@ require("child_process").execFileSync(
   [path.join(project, "node_modules/vite/bin/vite.js"), "build"],
   {
     cwd: project,
-    env: { ...process.env, VITE_BASE_PATH: "/english/" },
     stdio: "inherit",
   },
 );
@@ -26,14 +25,14 @@ const types = {
 };
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, "http://localhost");
-  if (!url.pathname.startsWith("/english/")) {
+  if (!url.pathname.startsWith("/en-school/")) {
     res.writeHead(404);
     res.end();
     return;
   }
   const file = path.join(
     root,
-    url.pathname.slice("/english/".length) || "index.html",
+    url.pathname.slice("/en-school/".length) || "index.html",
   );
   if (!fs.existsSync(file)) {
     res.writeHead(404);
@@ -50,7 +49,7 @@ const server = http.createServer((req, res) => {
 const fakeWorker = `self.onmessage=({data:d})=>{if(d.action==='prepare'){postMessage({id:d.id,type:'progress',percent:45});setTimeout(()=>postMessage({id:d.id,type:'ready'}),20);}else{let b=new ArrayBuffer(44+8820),v=new DataView(b);function w(o,t){[...t].forEach((c,i)=>v.setUint8(o+i,c.charCodeAt(0)))}w(0,'RIFF');v.setUint32(4,b.byteLength-8,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,44100,true);v.setUint32(28,88200,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,8820,true);postMessage({id:d.id,type:'audio',blob:new Blob([b],{type:'audio/wav'})});}}`;
 (async () => {
   await new Promise((r) => server.listen(0, "127.0.0.1", r));
-  const url = "http://127.0.0.1:" + server.address().port + "/english/";
+  const url = "http://127.0.0.1:" + server.address().port + "/en-school/";
   const browser = await chromium.launch({
     executablePath: process.env.TEST_CHROMIUM_PATH || undefined,
     args: ["--no-sandbox", "--autoplay-policy=no-user-gesture-required"],

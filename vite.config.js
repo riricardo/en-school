@@ -67,7 +67,7 @@ function piperCompatibility() {
 export default defineConfig(() => {
   prepareFiles();
   return {
-    base: process.env.VITE_BASE_PATH || "/",
+    base: "/en-school/",
     build: { target: "es2022" },
     worker: { format: "es", plugins: () => [piperCompatibility()] },
     plugins: [

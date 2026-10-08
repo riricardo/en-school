@@ -29,7 +29,7 @@ A publicação agora usa o resultado do build, e não os arquivos da raiz direta
 
 Nada foi enviado ou publicado no GitHub durante esta alteração.
 
-Para compilar manualmente: `npm run build`. Ao hospedar numa subpasta, defina `VITE_BASE_PATH`, por exemplo `/english-quest/`, durante o build. O servidor não executa Vite: ele só entrega os arquivos estáticos já compilados.
+Para compilar manualmente: `npm run build`. O caminho de publicação é `/en-school/`. O servidor não executa Vite: ele só entrega os arquivos estáticos já compilados.
 
 ## Progresso
 
