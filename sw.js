@@ -1,5 +1,5 @@
 /* Snapshots completos para o app; o motor TTS só é baixado quando usado. */
-const FILES = ["assets/index-BpdWlx5Q.css","assets/index-BzWhgnyj.js","assets/ort.wasm.min-DpcBsoxA.js","assets/piper-o91UDS6e-DchrM4kQ.js","assets/tts-worker-ChqjPZ29.js","data.js","icon-192.png","icon-512.png","icon.svg","index.html","manifest.json"];
+const FILES = ["assets/index-B8pr_jff.js","assets/index-BpdWlx5Q.css","assets/ort.wasm.min-4XBKGcRb.js","assets/piper-o91UDS6e-DchrM4kQ.js","assets/tts-worker-B_OZ3gr4.js","data.js","icon-192.png","icon-512.png","icon.svg","index.html","manifest.json"];
 const base = new URL("./", self.location.href);
 const PREFIX = "english-quest-" + encodeURIComponent(base.pathname) + "-v2-";
 const META = PREFIX + "meta";
